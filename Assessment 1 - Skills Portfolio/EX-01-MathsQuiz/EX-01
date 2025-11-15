@@ -1,0 +1,771 @@
+from tkinter import * #importing tkinter 
+from PIL import ImageTk,Image  #importing PIL for importing image
+import random #importing for random numbering in question
+import pygame #importing for adding music
+
+pygame.mixer.init() #importing music
+pygame.mixer.music.load('Assessment 1 - Skills Portfolio/EX-01-MathsQuiz/resources/bg_song.mp3') #loading the music
+pygame.mixer.music.play(-1) #playing the music on loop
+
+
+window=Tk() #creates the main application window
+window.title('Math Quiz') #sets the title of the window
+window.state('zoomed') #keeps window in maximized state
+window.resizable(FALSE, FALSE) #disables window resizing
+
+main_fr=Frame(window) #creates the main frame for all content in the window
+main_fr.pack() #packs the main frame onto the window
+
+
+
+class mathquiz: #defines mathquiz class that contains all game logic and screens
+
+    def __init__ (self, window):  #initializes the class with the window parameter
+        self.window= window #stores the main window reference inside the class
+
+        btn_img = Image.open('Assessment 1 - Skills Portfolio/EX-01-MathsQuiz/resources/btn.png').resize((200, 60)) #opens and resizes button image
+        self.btn_img = ImageTk.PhotoImage(btn_img) #converts the button image for tkinter use
+
+        btn2_img = Image.open('Assessment 1 - Skills Portfolio/EX-01-MathsQuiz/resources/btn2.png').resize((200, 60))  #opens and resizes second button image
+        self.btn2_img = ImageTk.PhotoImage(btn2_img) #converts the second button image for tkinter use
+
+
+        self.qn_no=0 #sets question number variable to 0
+
+        self.main() #calls the main function to display the first screen
+
+    def delete_fr(self): #defines function to clear all frames
+        for frame in main_fr.winfo_children(): #loops through all child widgets in main frame
+            frame.destroy() #removes each widget
+
+    def main(self): #defines main screen of the quiz  
+        self.delete_fr() #clears any existing frames
+        self.fr_1=Frame(main_fr,width=1535,height=840)  #creates new frame for main screen
+        self.fr_1.pack() #packs the main screen frame
+
+        bg1 = Image.open('Assessment 1 - Skills Portfolio/EX-01-MathsQuiz/resources/bg_1.png') #opens background image for main screen
+        bg1_rs = bg1.resize((1535,840)) #resizes the background image
+        self.bg_1 = ImageTk.PhotoImage(bg1_rs) #converts image for tkinter
+        bg_1l = Label(self.fr_1, image=self.bg_1)  #creates label to hold background image
+        bg_1l.place(x=0,y=0) #places the background label
+
+        Label(self.fr_1,text='MATH QUIZ', #creates title label
+              font=('Comic Sans MS', 100, 'bold'),  #sets font style and size
+              fg='#D81E5B',  #sets text color 
+              bg='#ffe4e9'#sets background color and position
+              ).place(x=100,y=250) #place the widget at coordinates x=100 and y=250
+
+        Button(self.fr_1,image=self.btn_img,  #creates play button
+               text='Play', #sets button text
+               font=('Comic Sans MS', 20,'bold'), #sets font
+               compound='center',  #places text at center of button image
+               activebackground='#ffe4e9', #sets button color when clicked
+               borderwidth=0, #removes border
+               highlightthickness=0,  #removes highlight border
+               relief='flat', #sets flat button style
+               command= self.instruction #runs instruction screen when clicked
+               ).place(x=800,y=650) #place the widget at coordinates x=100 and y=250
+        
+
+    def instruction(self):#defines instruction screen
+        self.delete_fr()  #clears any previous frames
+        self.fr_2 = Frame(main_fr, width=1535, height=840) #creates frame for instruction page
+        self.fr_2.pack() #packs instruction frame
+
+   
+        bg2 = Image.open('Assessment 1 - Skills Portfolio/EX-01-MathsQuiz/resources/bg_2.png') #opens background for instruction page
+        bg2_rs = bg2.resize((1535,840)) #resizes background
+        self.bg_2 = ImageTk.PhotoImage(bg2_rs) #converts background for tkinter
+        bg_2l = Label(self.fr_2, image=self.bg_2) #creates label for background
+        bg_2l.place(x=0,y=0) #places background
+
+        Label(self.fr_2,text='INSTRUCTIONS', #creates instructions title
+        font=('Comic Sans MS', 40, 'bold'),   #sets font and size
+        fg='#D81E5B', #sets text color
+        bg='#ffe4e9').place(x=550,y=20) #sets background color and position
+
+        txt_box=Text(self.fr_2, width=70,height=23, #creates text box for instruction content
+                     font=('Comic Sans MS', 14,'bold'), #sets font
+                     bg='#fffdf4', #sets background color
+                     bd=0, #removes border
+                     highlightthickness=0, #removes highlight
+                     relief='flat') #flat style
+        txt_box.place(x=300,y=110) #places text box
+        txt_box.insert(END,""" 
+1. Pick your Level:
+   - Easy = 1-digit numbers
+   - Moderate = 2-digit numbers
+   - Advanced = 4-digit numbers
+   Click the button for the level you want!
+
+2. Solve the Problems:
+   - You’ll get 10 addition or subtraction questions.
+   - Type your answer and click Submit.
+
+3. Scoring:
+   - 10 points if you answer correctly the first time.
+   - 5 points if you get it right on your second try.
+   - 0 points if both attempts are wrong.
+
+4. Your Score:
+   - After all questions, see your total score and rank (A+, A, B+, B, C).
+
+5. Play Again:
+   - At the end, you can choose to try, to play again the same level, try another quiz or exit.
+                       
+                                        BEST OF LUCK AND HAVE FUN.""") #inserts multi-line text into the box
+
+        
+        txt_box.config(state=DISABLED) #disables text editing
+
+
+        Button(self.fr_2,image=self.btn_img, #creates next button
+               text='Next', #sets text
+               font=('Comic Sans MS', 20,'bold'),#sets font
+               compound='center',  #centers text
+               activebackground='#ffe4e9', #sets color on click
+               borderwidth=0,  #removes border
+               highlightthickness=0, #removes highlight
+               relief='flat', #flat button style
+               command=self.level).place(x=960,y=760)  #runs level selection screen
+        
+        
+        Button(self.fr_2,image=self.btn_img, #creates back button
+               text='Back',
+               font=('Comic Sans MS', 20,'bold'), 
+               compound='center', 
+               activebackground='#ffe4e9', 
+               borderwidth=0,
+               highlightthickness=0,
+               relief='flat',
+               command= self.main #goes back to main screen
+               ).place(x=400,y=760)
+    
+    def level(self):  #defines level selection screen
+        self.delete_fr() #clears frames
+        self.fr_3 = Frame(main_fr, width=1535, height=840) #creates frame for level selection
+        self.fr_3.pack()  #packs the frame
+
+
+        bg3 = Image.open('Assessment 1 - Skills Portfolio/EX-01-MathsQuiz/resources/bg_3.png')  #opens background image
+        bg3_rs = bg3.resize((1535,840)) #resizes background
+        self.bg_3 = ImageTk.PhotoImage(bg3_rs) 
+        bg_3l = Label(self.fr_3, image=self.bg_3)
+        bg_3l.place(x=0,y=0)
+
+        Label(self.fr_3,text='MODE', #creates mode title label
+        font=('Comic Sans MS', 50, 'bold'), 
+        fg='#D81E5B', 
+        bg='#ffe4e9').place(x=665,y=20)
+
+        Button(self.fr_3, image=self.btn_img, #creates easy mode button
+               text='Easy',  #sets button text
+               font=('Comic Sans MS', 25, 'bold'), 
+               fg='#D81E5B', 
+               bg='#ffe4e9',
+               compound='center',   #centers text
+               activebackground='#ffe4e9',  #sets click color
+               borderwidth=0, #removes border
+               highlightthickness=0,  #removes highlight
+               relief='flat', #flat button style
+               command=self.Easy_qn  #runs easy question screen
+               ).place(x=665,y=200)
+         
+        Button(self.fr_3, image=self.btn_img, #creates back button
+               text='Moderate',
+               font=('Comic Sans MS', 25, 'bold'), 
+               fg='#D81E5B', 
+               bg='#ffe4e9',compound='center', 
+               activebackground='#ffe4e9',
+               borderwidth=0,
+               highlightthickness=0,
+               relief='flat',
+               command=self.moderate_qn  #runs moderate mode
+               ).place(x=665,y=350)  
+        
+        Button(self.fr_3, image=self.btn_img, #creates advanced mode button
+               text='Advanced',
+               font=('Comic Sans MS', 25, 'bold'), 
+               fg='#D81E5B', 
+               bg='#ffe4e9',compound='center', 
+               activebackground='#ffe4e9',
+               borderwidth=0,
+               highlightthickness=0,
+               relief='flat',
+               command=self.advanced_qn #runs advanced mode 
+               ).place(x=665,y=500)  
+
+        Button(self.fr_3,image=self.btn_img, 
+               text='Back',
+               font=('Comic Sans MS', 20,'bold'),
+               compound='center', 
+               activebackground='#ffe4e9',
+               borderwidth=0,
+               highlightthickness=0,
+               relief='flat',
+               command= self.instruction #returns to instructions screen
+               ).place(x=400,y=760)
+        
+    def quit(self): #defines quit function
+        window.destroy() #closes the tkinter window
+
+    
+    def Easy_qn(self): #defines the function for the easy mode questions
+        self.delete_fr()  #clears any previous frame on the main frame
+        self.fr_4 = Frame(main_fr, width=1535, height=840) #creates a new frame for the easy quiz
+        self.fr_4.place(x=0,y=0)  #places the frame at the top-left corner
+        
+        bg4 = Image.open('Assessment 1 - Skills Portfolio/EX-01-MathsQuiz/resources/bg_4.png') #opens the background image for the easy quiz
+        bg4_rs = bg4.resize((1535,840)) 
+        self.bg_4 = ImageTk.PhotoImage(bg4_rs) 
+        bg_4l = Label(self.fr_4, image=self.bg_4)
+        bg_4l.place(x=0,y=0) #places the background image at position (0,0)
+
+        self.score = 0 #initializes player score
+        self.attempts = 2 #sets the number of attempts per question
+        self.current_qn = 1 #starts the quiz from question number 1
+        self.total_qns = 10 #sets total questions to 10
+        self.crct_ans='' #stores the correct answer for the current question
+
+
+        def qns(): #defines a function to generate random math questions
+            num1=random.randint(1,9) #picks a random number between 1 and 9
+            num2=random.randint(1,9) #picks another random number between 1 and 9
+            math=random.choice(['+','-']) #randomly chooses between addition or subtraction
+            if math == '+': #checks if operator is addition
+                self.crct_ans = num1 + num2 #calculates the correct answer for addition
+            else: #otherwise for subtraction
+                self.crct_ans= num1 - num2 #calculates the correct answer for subtraction
+
+            return f'{num1} {math} {num2}'  #returns the question string like '3 + 4'
+        
+        qn_no=Label(self.fr_4, text=f'Question no. {self.current_qn}', #creates label to show question number
+            font=('Comic Sans MS', 40, 'bold'),  #sets font style and size
+            fg='#D81E5B', #sets font color
+            bg='#fffdf4')  #sets background color
+        qn_no.place(x=590,y=170) #positions the label on screen
+
+        question=Label(self.fr_4, text=qns(),  #creates label to display the question
+            font=('Comic Sans MS', 40, 'bold'), 
+            fg='#D81E5B',
+            bg='#fffdf4')
+        question.place(x=710,y=290)
+
+        feedback=Label(self.fr_4, text= '', font=('Comic Sans MS', 20, 'bold'),  #creates label for feedback messages
+                        fg='#D81E5B',bg='#fffdf4',justify='center', width=30) #sets color and alignment
+        feedback.place(x=530, y=600)#positions the feedback label
+
+        
+        atmpt_left=Label(self.fr_4, text=f' Attempts left: {self.attempts}', font=('Comic Sans MS', 20, 'bold'),  #shows remaining attempts
+                        fg='#D81E5B',bg='#fffdf4')
+        atmpt_left.place(x=655, y=650)  #positions attempts label
+
+        total_scr=Label(self.fr_4, text=f' Total Score: {self.score}', font=('Comic Sans MS', 20, 'bold'), #shows total score
+                        fg='#D81E5B',bg='#fffdf4')
+        total_scr.place(x=670, y=700)  #positions score label
+
+        user_ans=StringVar()#creates a string variable to store user input
+        txt_box = Entry(self.fr_4, textvariable=user_ans,
+                font=('Comic Sans MS', 20, 'bold'), relief='solid', bd=0.5, #sets font and border
+                bg='#ffe4e9', justify='center')#sets background and centers text
+        txt_box.place(x=620, y=430) #positions the entry box
+
+        
+        def submit_easy():#defines function to handle answer submission
+            try:#tries to convert user input to integer
+                answer = int(user_ans.get()) #gets the entered answer as integer
+            
+            except: #if conversion fails (non-numeric input)
+                feedback.config(text='Please enter a valid number!')#shows error message 
+                return #exits function
+            
+            if answer == self.crct_ans: #checks if user answer is correct
+
+                if self.attempts == 2:#checks if correct on first try
+                    self.score += 10  #adds 10 points
+                    feedback.config(text=f'Correct! (+10 points)') #displays success message
+                    total_scr.config(text=f' Total Score: {self.score}')#updates score label
+                
+                else: #if correct on second attempt
+                    self.score += 5 #adds 5 points
+                    feedback.config(text=f'Correct on 2nd try! (+5 points)') #displays message
+                    total_scr.config(text=f' Total Score: {self.score}') #updates score label
+                    
+
+                self.attempts=2 #resets attempts for next question
+                user_ans.set('') #clears input box
+                self.current_qn += 1 #moves to next question
+                self.fr_4.after(1000, lambda: qn_no.config(text=f'Question no. {self.current_qn}')) #updates question number after delay
+
+                if self.current_qn<self.total_qns: #checks if more questions remain
+                     self.fr_4.after(1000,nxt_qn)  #loads next question after delay
+                else:#if quiz finished
+                    self.show_result(self.Easy_qn) #shows result screen
+
+            else: #if answer is wrong
+                self.attempts -= 1 #reduces attempt count
+
+                if self.attempts > 0: #if attempts still left
+                    feedback.config(text='Wrong answer! Try again.') #shows retry message
+                    atmpt_left.config(text=f' Attempts left: {self.attempts}')  #updates attempt label
+                    user_ans.set('') #clears entry box
+
+                else: #if no attempts left
+                    atmpt_left.config(text=f' Attempts left: {self.attempts}') #updates label
+                    feedback.config(text=f'Out of attempts! The answer was {self.crct_ans}.') #shows correct answer
+                    self.current_qn += 1 #shows correct answer
+                    self.fr_4.after(1000, lambda: qn_no.config(text=f'Question no. {self.current_qn}')) #updates question number after delay
+                    
+
+                    if self.current_qn<self.total_qns: #checks if more questions remain
+                        self.fr_4.after(1000,nxt_qn) #loads next question
+                        
+                    else: #if last question done
+                        self.show_result(self.Easy_qn) #shows result screen
+
+           
+        Button(self.fr_4,image=self.btn_img, #creates back button
+           text='Back',
+           font=('Comic Sans MS', 20,'bold'),
+           compound='center', 
+           activebackground='#ffe4e9',
+           borderwidth=0,
+           highlightthickness=0,
+           relief='flat',
+           command= self.level  #positions the back button
+           ).place(x=400,y=760)
+        
+        Button(self.fr_4, image=self.btn_img, #creates quit button
+           text='Quit',
+           font=('Comic Sans MS', 20,'bold'),
+           compound='center', 
+           activebackground='#fffdf4',
+           borderwidth=0,
+           highlightthickness=0,
+           relief='flat',
+           command=self.quit #positions quit button
+           ).place(x=960,y=760)
+    
+        Button(self.fr_4, image=self.btn2_img, #creates submit button
+           text='Submit',
+           font=('Comic Sans MS', 20,'bold'),
+           compound='center', 
+           activebackground='#fffdf4',
+           borderwidth=0,
+           highlightthickness=0,
+           relief='flat',
+           command=submit_easy #positions submit button
+           ).place(x=690, y=500)
+        
+        def nxt_qn(): #defines function to load the next question
+            question.config(text=qns())  #generates and updates a new question
+            feedback.config(text='')  #clears feedback message
+            user_ans.set('') #clears answer box
+            self.attempts=2 #resets attempts
+            atmpt_left.config(text=f' Attempts left: {self.attempts}')  #updates attempt label
+
+
+    #same as easy_qn function other than the random number digit
+    def moderate_qn(self): #defines the function for moderate level questions
+        self.delete_fr() 
+        self.fr_5 = Frame(main_fr, width=1535, height=840)
+        self.fr_5.place(x=0,y=0)
+        
+        bg5 = Image.open('Assessment 1 - Skills Portfolio/EX-01-MathsQuiz/resources/bg_4.png')
+        bg5_rs = bg5.resize((1535,840)) 
+        self.bg_5 = ImageTk.PhotoImage(bg5_rs) 
+        bg_5l = Label(self.fr_5, image=self.bg_5)
+        bg_5l.place(x=0,y=0)
+
+        self.score = 0
+        self.attempts = 2
+        self.current_qn = 1
+        self.total_qns = 10
+        self.crct_ans=''
+
+        def qns():
+            num1=random.randint(10,99)  #generates a random two-digit number
+            num2=random.randint(10,99) #generates another random two-digit number
+            math=random.choice(['+','-'])
+            if math == '+':
+                self.crct_ans = num1 + num2
+            else:
+                self.crct_ans= num1 - num2
+
+            return f'{num1} {math} {num2}'
+        
+        qn_no=Label(self.fr_5, text=f'Question no. {self.current_qn}',
+            font=('Comic Sans MS', 40, 'bold'), 
+            fg='#D81E5B',
+            bg='#fffdf4')
+        qn_no.place(x=590,y=170)
+
+        question=Label(self.fr_5, text=qns(),
+            font=('Comic Sans MS', 40, 'bold'), 
+            fg='#D81E5B',
+            bg='#fffdf4')
+        question.place(x=710,y=290)
+
+        feedback=Label(self.fr_5, text= '', font=('Comic Sans MS', 20, 'bold'),
+                        fg='#D81E5B',bg='#fffdf4',justify='center', width=30)
+        feedback.place(x=530, y=600)
+
+        
+        atmpt_left=Label(self.fr_5, text=f' Attempts left: {self.attempts}', font=('Comic Sans MS', 20, 'bold'),
+                        fg='#D81E5B',bg='#fffdf4')
+        atmpt_left.place(x=655, y=650)
+
+        total_scr=Label(self.fr_5, text=f' Total Score: {self.score}', font=('Comic Sans MS', 20, 'bold'),
+                        fg='#D81E5B',bg='#fffdf4')
+        total_scr.place(x=670, y=700)
+
+        user_ans=StringVar()
+        txt_box = Entry(self.fr_5, textvariable=user_ans,
+                font=('Comic Sans MS', 20, 'bold'), relief='solid', bd=0.5,
+                bg='#ffe4e9', justify='center')
+        txt_box.place(x=620, y=430)
+
+        
+        def submit_moderate():
+            try:
+                answer = int(user_ans.get())
+            
+            except:
+                feedback.config(text='Please enter a valid number!')
+                return
+            
+            if answer == self.crct_ans:
+
+                if self.attempts == 2:
+                    self.score += 10
+                    feedback.config(text=f'Correct! (+10 points)')
+                    total_scr.config(text=f' Total Score: {self.score}')
+                
+                else:
+                    self.score += 5
+                    feedback.config(text=f'Correct on 2nd try! (+5 points)')
+                    total_scr.config(text=f' Total Score: {self.score}')
+                    
+
+                self.attempts=2
+                user_ans.set('')
+                self.current_qn += 1
+                self.fr_5.after(1000, lambda: qn_no.config(text=f'Question no. {self.current_qn}'))
+
+                if self.current_qn<self.total_qns:
+                     self.fr_5.after(1000,nxt_qn)
+                else:
+                    self.show_result(self.moderate_qn)
+
+            else:
+                self.attempts -= 1
+
+                if self.attempts > 0:
+                    feedback.config(text='Wrong answer! Try again.')
+                    atmpt_left.config(text=f' Attempts left: {self.attempts}')
+                    user_ans.set('')
+
+                else:
+                    atmpt_left.config(text=f' Attempts left: {self.attempts}')
+                    feedback.config(text=f'Out of attempts! The answer was {self.crct_ans}.')
+                    self.current_qn += 1
+                    self.fr_5.after(1000, lambda: qn_no.config(text=f'Question no. {self.current_qn}'))
+                    
+
+                    if self.current_qn<self.total_qns:
+                        self.fr_5.after(1000,nxt_qn)
+                        
+                    else:
+                        self.show_result(self.moderate_qn)  #shows final result after last question
+
+           
+        Button(self.fr_5,image=self.btn_img, 
+           text='Back',
+           font=('Comic Sans MS', 20,'bold'),
+           compound='center', 
+           activebackground='#ffe4e9',
+           borderwidth=0,
+           highlightthickness=0,
+           relief='flat',
+           command= self.level).place(x=400,y=760)
+        
+        Button(self.fr_5, image=self.btn_img, 
+           text='Quit',
+           font=('Comic Sans MS', 20,'bold'),
+           compound='center', 
+           activebackground='#fffdf4',
+           borderwidth=0,
+           highlightthickness=0,
+           relief='flat',
+           command=self.quit).place(x=960,y=760)
+    
+        Button(self.fr_5, image=self.btn2_img, 
+           text='Submit',
+           font=('Comic Sans MS', 20,'bold'),
+           compound='center', 
+           activebackground='#fffdf4',
+           borderwidth=0,
+           highlightthickness=0,
+           relief='flat',
+           command=submit_moderate).place(x=690, y=500)
+        
+        def nxt_qn():
+            question.config(text=qns())
+            feedback.config(text='')
+            user_ans.set('')
+            self.attempts=2
+            atmpt_left.config(text=f' Attempts left: {self.attempts}')
+        
+        
+    #same as easy_qn and moderate_qn function other than digit of random number
+    def advanced_qn(self):#defines a function for the advanced question round
+        self.delete_fr()
+        self.fr_6 = Frame(main_fr, width=1535, height=840)
+        self.fr_6.place(x=0,y=0)
+        
+        bg6 = Image.open('Assessment 1 - Skills Portfolio/EX-01-MathsQuiz/resources/bg_4.png')
+        bg6_rs = bg6.resize((1535,840)) 
+        self.bg_6 = ImageTk.PhotoImage(bg6_rs) 
+        bg_6l = Label(self.fr_6, image=self.bg_6)
+        bg_6l.place(x=0,y=0)
+
+        self.score = 0
+        self.attempts = 2
+        self.current_qn = 1
+        self.total_qns = 10
+        self.crct_ans=''
+
+        def qns():
+            num1=random.randint(1000,9999)#generates the first random 4-digit number
+            num2=random.randint(1000,9999) #generates the second random 4-digit number
+            math=random.choice(['+','-'])
+            if math == '+':
+                self.crct_ans = num1 + num2
+            else:
+                self.crct_ans= num1 - num2
+
+            return f'{num1} {math} {num2}'
+        
+        qn_no=Label(self.fr_6, text=f'Question no. {self.current_qn}',
+            font=('Comic Sans MS', 40, 'bold'), 
+            fg='#D81E5B',
+            bg='#fffdf4')
+        qn_no.place(x=590,y=170)
+
+        question=Label(self.fr_6, text=qns(),
+            font=('Comic Sans MS', 40, 'bold'), 
+            fg='#D81E5B',
+            bg='#fffdf4')
+        question.place(x=710,y=290)
+
+        feedback=Label(self.fr_6, text= '', font=('Comic Sans MS', 20, 'bold'),
+                        fg='#D81E5B',bg='#fffdf4',justify='center', width=30)
+        feedback.place(x=530, y=600)
+
+        
+        atmpt_left=Label(self.fr_6, text=f' Attempts left: {self.attempts}', font=('Comic Sans MS', 20, 'bold'),
+                        fg='#D81E5B',bg='#fffdf4')
+        atmpt_left.place(x=655, y=650)
+
+        total_scr=Label(self.fr_6, text=f' Total Score: {self.score}', font=('Comic Sans MS', 20, 'bold'),
+                        fg='#D81E5B',bg='#fffdf4')
+        total_scr.place(x=670, y=700)
+
+        user_ans=StringVar()
+        txt_box = Entry(self.fr_6, textvariable=user_ans,
+                font=('Comic Sans MS', 20, 'bold'), relief='solid', bd=0.5,
+                bg='#ffe4e9', justify='center')
+        txt_box.place(x=620, y=430)
+
+        
+        def submit_advanced():
+            try:
+                answer = int(user_ans.get())
+            
+            except:
+                feedback.config(text='Please enter a valid number!')
+                return
+            
+            if answer == self.crct_ans:
+
+                if self.attempts == 2:
+                    self.score += 10
+                    feedback.config(text=f'Correct! (+10 points)')
+                    total_scr.config(text=f' Total Score: {self.score}')
+                
+                else:
+                    self.score += 5
+                    feedback.config(text=f'Correct on 2nd try! (+5 points)')
+                    total_scr.config(text=f' Total Score: {self.score}')
+                    
+
+                self.attempts=2
+                user_ans.set('')
+                self.current_qn += 1
+                self.fr_6.after(1000, lambda: qn_no.config(text=f'Question no. {self.current_qn}'))
+
+                if self.current_qn<self.total_qns:
+                     self.fr_6.after(1000,nxt_qn)
+                else:
+                    self.show_result(self.advanced_qn)#shows final result screen
+
+            else:
+                self.attempts -= 1
+
+                if self.attempts > 0:
+                    feedback.config(text='Wrong answer! Try again.')
+                    atmpt_left.config(text=f' Attempts left: {self.attempts}')
+                    user_ans.set('')
+
+                else:
+                    atmpt_left.config(text=f' Attempts left: {self.attempts}')
+                    feedback.config(text=f'Out of attempts! The answer was {self.crct_ans}.')
+                    self.current_qn += 1
+                    self.fr_6.after(1000, lambda: qn_no.config(text=f'Question no. {self.current_qn}'))
+                    
+
+                    if self.current_qn<self.total_qns:
+                        self.fr_6.after(1000,nxt_qn)
+                        
+                    else:
+                        self.show_result(self.advanced_qn)
+
+           
+        Button(self.fr_6,image=self.btn_img, 
+           text='Back',
+           font=('Comic Sans MS', 20,'bold'),
+           compound='center', 
+           activebackground='#ffe4e9',
+           borderwidth=0,
+           highlightthickness=0,
+           relief='flat',
+           command= self.level).place(x=400,y=760)
+        
+        Button(self.fr_6, image=self.btn_img, 
+           text='Quit',
+           font=('Comic Sans MS', 20,'bold'),
+           compound='center', 
+           activebackground='#fffdf4',
+           borderwidth=0,
+           highlightthickness=0,
+           relief='flat',
+           command=self.quit).place(x=960,y=760)
+    
+        Button(self.fr_6, image=self.btn2_img, 
+           text='Submit',
+           font=('Comic Sans MS', 20,'bold'),
+           compound='center', 
+           activebackground='#fffdf4',
+           borderwidth=0,
+           highlightthickness=0,
+           relief='flat',
+           command=submit_advanced).place(x=690, y=500)
+        
+        def nxt_qn():
+            question.config(text=qns())
+            feedback.config(text='')
+            user_ans.set('')
+            self.attempts=2
+            atmpt_left.config(text=f' Attempts left: {self.attempts}')
+
+
+    def show_result(self,mode):#defines a function to show the result screen
+
+        self.mode=mode#stores the mode used (easy/moderate/advanced)
+        self.delete_fr()#deletes the previous frame
+        self.fr_7 = Frame(main_fr, width=1535, height=840)#creates a new frame for results
+        self.fr_7.place(x=0,y=0)  #places the frame at top-left corner
+        
+        bg7 = Image.open('Assessment 1 - Skills Portfolio/EX-01-MathsQuiz/resources/bg_5.png')
+        bg7_rs = bg7.resize((1535,840)) 
+        self.bg_5 = ImageTk.PhotoImage(bg7_rs) 
+        bg_7l = Label(self.fr_7, image=self.bg_5)
+        bg_7l.place(x=0,y=0)
+
+        total_l=Label(self.fr_7,text= f'Total Score: {self.score}',#creates a label to display total score
+                      font=('Comic Sans MS', 40, 'bold'), #sets font style and size 
+                      fg='#D81E5B',bg='#fffdf4',justify='center', width=17) #sets color, justification, and width
+        total_l.place(x=500,y=200)  #positions total score label
+        
+        rank_l=Label(self.fr_7, text='',  #creates a label for rank, initially empty
+                    font=('Comic Sans MS', 40, 'bold'), 
+                    fg='#D81E5B',bg='#fffdf4',justify='center', width=30)
+        rank_l.place(x=280,y=310)
+
+        thnk=Label(self.fr_7, text='Thank you for playing. Hope you had fun ;)',  #creates a thank you message
+                    font=('Comic Sans MS', 40, 'bold'), 
+                    fg='#D81E5B',bg='#fffdf4')
+        thnk.place(x=200,y=400)
+            
+
+        def rank(): #defines function to calculate and display rank based on score
+            if self.score>=97: #checks if score >= 97
+                rank_l.config(text='Your rank is A+, Outstanding!') #displays rank A+
+            elif self.score>=93: #checks if score >= 93
+                rank_l.config(text='Your rank is A, Excellent!')#displays rank A
+            elif self.score>=90:#checks if score > 90
+                rank_l.config(text='Your rank is A-, Very Good')#displays rank A-
+            elif self.score>=87:
+                rank_l.config(text='Your rank is B+, Good')
+            elif self.score>=83:
+                rank_l.config(text='Your rank is B, Above Average')
+            elif self.score>=80:
+                rank_l.config(text='Your rank is B-,Fairly Good')
+            elif self.score>=77:
+                rank_l.config(text='Your rank is C, Satisfactory')
+            elif self.score>=73:
+                rank_l.config(text='Your rank is C+, Average')
+            elif self.score>=70:
+                rank_l.config(text='Your rank is C-, Below Average')
+            elif self.score>=67:
+                rank_l.config(text='Your rank is D+, Poor')   
+            elif self.score>=65:
+                rank_l.config(text='Your rank is D, Barely Passing')   
+            elif self.score<=65:
+                rank_l.config(text='Your rank is F, FAIL, its ok :)')   
+
+        rank()#calls the rank function to update rank label
+  
+        Button(self.fr_7,image=self.btn2_img, #creates button to go to level selection
+           text='Go to Levels',#sets button text
+           font=('Comic Sans MS', 20,'bold'), #sets font style and size
+           compound='center', #centers text and image
+           activebackground='#ffe4e9',  #sets active background color
+           borderwidth=0,#removes border
+           highlightthickness=0,  #removes highlight border
+           relief='flat', #sets flat button style
+           command= self.level #links to level selection
+           ).place(x=370,y=600)
+    
+
+        Button(self.fr_7, image=self.btn2_img, #creates quit button
+           text='Quit',
+           font=('Comic Sans MS', 20,'bold'),
+           compound='center', 
+           activebackground='#fffdf4',
+           borderwidth=0,
+           highlightthickness=0,
+           relief='flat',
+           command=self.quit #links to quit
+           ).place(x=1010,y=600)
+            
+        play_agn=Button(self.fr_7,image=self.btn2_img,  #creates button to replay current mode
+           text='Play again',
+           font=('Comic Sans MS', 20,'bold'),
+           compound='center', 
+           activebackground='#ffe4e9',
+           borderwidth=0,
+           highlightthickness=0,
+           relief='flat',
+           command= mode) #links button to current mode function
+        play_agn.place(x=690,y=600)
+
+
+    
+    
+
+
+    
+        
+app=mathquiz(window)# create an instance of the mathquiz class using the main tkinter window
+window.mainloop() #starts the tkinter event loop to keep the window running
