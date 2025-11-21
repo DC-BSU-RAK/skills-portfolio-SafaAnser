@@ -1,0 +1,175 @@
+from tkinter import * #importing tkinter 
+from PIL import ImageTk,Image  #importing PIL for importing image
+import random #importing for random jokes 
+import pygame #importing for background music and sound effects
+import pyttsx3 #importing text-to-speech engine
+
+
+pygame.mixer.init() #importing music
+pygame.mixer.music.load('Assessment 1 - Skills Portfolio/EX-02-JOKE/resources-2/bg_song.mp3') #loading background music file
+pygame.mixer.music.set_volume(0.2) #setting music volume to 20%
+pygame.mixer.music.play(-1)#playing background music on infinite loop
+
+laugh_sound = pygame.mixer.Sound('Assessment 1 - Skills Portfolio/EX-02-JOKE/resources-2/laughing.mp3') #loading laughing sound effect
+laugh_sound.set_volume(0.1)  
+
+window=Tk() #creating the main window
+window.title('ALEXA TELL ME A JOKE') #setting window title
+window.state('zoomed')  #opening window in maximized mode
+window.resizable(FALSE, FALSE) #disabling window resizing
+
+fr1=Frame(window,width=1535, height=840)#creating frame 1 for main screen
+fr1.place(x=0,y=0)  #placing frame 1 in window
+
+bg1 = Image.open('Assessment 1 - Skills Portfolio/EX-02-JOKE/resources-2/1.png') #opening background image
+bg1_rs = bg1.resize((1535,840))#resizing background image to fit the window
+bg_1 = ImageTk.PhotoImage(bg1_rs) #converts image for tkinter
+bg_1l = Label(fr1, image=bg_1)  #creating label to display background image
+bg_1l.place(x=0,y=0) #placing background label
+
+
+
+def frame2(): #defining function to open the joke screen
+    fr2=Frame(window,width=1535, height=840)#creating second frame
+    fr2.place(x=0,y=0) #placing second frame at top-left
+
+    bg2 = Image.open('Assessment 1 - Skills Portfolio/EX-02-JOKE/resources-2/2.png') 
+    bg2_rs = bg2.resize((1535,840)) 
+    bg_2 = ImageTk.PhotoImage(bg2_rs) 
+    bg_2l = Label(fr2, image=bg_2)
+    bg_2l.image = bg_2 #keeping a reference to avoid garbage collection
+    bg_2l.place(x=0,y=0)
+
+
+    def randjoke():#function to choose a random joke
+        with open ('Assessment 1 - Skills Portfolio/A1 - Resources/randomJokes.txt') as file_handler :#opening jokes text file
+            lines=file_handler.readlines()#reading all lines into a list
+        
+        jokes = [] #creating empty list to store joke pairs
+
+        for line in lines: #iterating through each line in the file
+            line = line.strip()#removing extra spaces and newline
+            if '?' in line:  # make sure the format is correct
+                question, answer = line.split('?') #splitting into question and answer at '?'
+                jokes.append((question, answer))#adding joke tuple into list
+        
+        qn, ans = random.choice(jokes)#selecting a random joke
+        return qn + '?', ans #returning formatted question and answer
+    
+
+    joke_answer = StringVar() #creating variable to store answer
+    
+    def show_question():#function to show the joke question
+        qn, ans = randjoke() #getting random question and answer
+        question.config(text=qn)#displaying the question in label
+        joke_answer.set(ans)#storing answer
+        answer.config(text='') #clearing old answer
+        window.update()#updating window
+        local_engine = pyttsx3.init() #initializing text-to-speech engine
+        local_engine.setProperty('rate', 150)#setting speaking speed
+        local_engine.setProperty('volume', 0.9)#setting volume
+        local_engine.say(qn) #telling the joke question
+        local_engine.runAndWait() #running tts engine
+
+
+    
+    def show_ans(): #function to show punchline
+        ans_text = joke_answer.get() #getting stored answer
+        answer.config(text=ans_text)#displaying answer
+        window.update()
+        local_engine = pyttsx3.init()
+        local_engine.setProperty('rate', 150)
+        local_engine.setProperty('volume', 0.9)
+        local_engine.say(ans_text)
+        laugh_sound.play() #playing laughing sound effect to play with the voice
+        local_engine.runAndWait()
+
+
+
+    jokeQ_fr=Frame(fr2, width=430,height=250,bg='#fbca24') #creating frame for question
+    jokeQ_fr.place(x=240,y=120)#placing question frame
+
+    question=Label(jokeQ_fr, text='', bg='#fbca24',  #label to display joke question
+                   font=('Kristen ITC',20,'bold'), #adding fonts and sizes
+                   wraplength=410, #wraps text 
+                   justify='center') #centers the text together
+    question.place(relx=0.5, rely=0.5, anchor='center') #centering question label (chatgpt used in this line for reference)
+
+
+
+    jokeA_fr=Frame(fr2, width=410,height=200,bg='#fbca24') #creating frame for answer
+    jokeA_fr.place(x=935,y=450) #placing answer frame
+ 
+    answer=Label(jokeA_fr, text='',bg='#fbca24', #label to display joke answer
+                 font=('Kristen ITC',20,'bold'),
+                 wraplength=410,
+                 justify='center')
+    answer.place(relx=0.5, rely=0.5, anchor='center')#centering answer label
+
+
+
+    tell_joke=Button(fr2, text='Tell me the joke',  #button to trigger question
+                     font=('Kristen ITC',20,'bold'), 
+                     bg='#f1aa06',
+                     borderwidth=0,
+                     highlightthickness=0,
+                     activebackground='#f1aa06',
+                     command=show_question)
+    tell_joke.place(x=330,y=573)
+
+
+
+    ans_joke=Button(fr2, text='Show joke',  #button to reveal answer
+                    font=('Kristen ITC',20,'bold'), 
+                    bg='#f1aa06',
+                    borderwidth=0,
+                    highlightthickness=0,
+                    activebackground='#f1aa06',
+                    command=show_ans)
+    ans_joke.place(x=890,y=250)
+
+
+    def go_back(): #function to return to start page
+        fr2.place_forget()#hiding current frame
+        fr1.place(x=0, y=0)#showing frame 1 again
+
+    Button(fr2, text='BACK', font=('Kristen ITC',20,'bold'), #back button
+           bg='white',
+           width=10,
+           height=3,
+           borderwidth=0,
+           highlightthickness=0,
+           activebackground='white',
+           command=go_back).place(x=28,y=700)
+    
+    Button(fr2, text='QUIT', font=('Kristen ITC',20,'bold'), #quit button
+           bg='white',
+           width=8,
+           height=2,
+           borderwidth=0,
+           highlightthickness=0,
+           activebackground='white',
+           command=window.destroy).place(x=1350,y=50)
+
+
+
+Button(fr1, text='''Alexa  
+Tell me a Joke!''',  #main button to go to joke screen
+       font=('Kristen ITC',30,'bold'),
+       bg='white',
+       borderwidth=0,
+       highlightthickness=0,
+       width=15,
+       height=4,             
+       activebackground='white',
+       command=frame2).place(x=555,y=250)
+
+
+label1=Label(fr1,text='Press here ↑', #direction text under the main button
+             font=('Kristen ITC',10,'bold'),
+             bg='white')
+label1.place(x=720,y=500)
+
+
+
+window.mainloop() #tkinter event loop
