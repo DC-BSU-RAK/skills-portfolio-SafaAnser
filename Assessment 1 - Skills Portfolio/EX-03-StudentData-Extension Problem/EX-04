@@ -102,7 +102,11 @@ def all_student(): #function to show all student data
     Label(fr_1, text=f'Average percentage: {avg_percent}', bg='#d9d9d9', font=('Courier New',20,'bold')).place(x=10,y=590) #displays average percentage
 
     
-    sort = Menubutton(fr_1, text='Sort by Name',bg='#141223',fg='#d9d9d9', font=('Courier New', 16, 'bold'), relief=RAISED )#creates sort dropdown
+    sort = Menubutton(fr_1, text='Sort by Name',
+                      bg='#141223',
+                      fg='#d9d9d9', 
+                      font=('Courier New', 16, 'bold'), 
+                      relief=RAISED )#creates sort dropdown
     sort_menu = Menu(sort, tearoff=0)#creates menu for options
     sort.config(menu=sort_menu)#connects menu to button
     sort_menu.add_command(label='Ascending', command=asc)#adds ascending option
@@ -464,7 +468,7 @@ Button(window, text='All Students Info',
        activeforeground='#666666',
        borderwidth=1,
        relief=RIDGE,
-       command=all_student).place(x=50,y=200) #button to show info of all students
+       command=all_student).place(x=50,y=50) #button to show info of all students
 
 Button(window, text='Search', 
        font=('Courier New', 16, 'bold'), 
@@ -475,7 +479,7 @@ Button(window, text='Search',
        activeforeground='#666666',
        borderwidth=1,
        relief=RIDGE,
-       command=individual_stud).place(x=50,y=250) #button for searching
+       command=individual_stud).place(x=50,y=100) #button for searching
 
 Button(window, text='Highest Performer', 
        font=('Courier New', 16, 'bold'), 
@@ -486,7 +490,7 @@ Button(window, text='Highest Performer',
        activeforeground='#666666',
        borderwidth=1,
        relief=RIDGE,
-       command=highest).place(x=50,y=300)#button to show highest perfromer
+       command=highest).place(x=50,y=150)#button to show highest perfromer
 
 Button(window, text='Lowest Performer', 
        font=('Courier New', 16, 'bold'), 
@@ -497,7 +501,7 @@ Button(window, text='Lowest Performer',
        activeforeground='#666666',
        borderwidth=1,
        relief=RIDGE,
-       command=lowest).place(x=50,y=350) #button to show lowest performer
+       command=lowest).place(x=50,y=200) #button to show lowest performer
 
 Button(window, text='Add Student', 
        font=('Courier New', 16, 'bold'), 
@@ -508,7 +512,7 @@ Button(window, text='Add Student',
        activeforeground='#666666',
        borderwidth=1,
        relief=RIDGE,
-       command=add_stud).place(x=50,y=400) #button to add student info 
+       command=add_stud).place(x=50,y=250) #button to add student info 
 
 Button(window, text='Delete Student', 
        font=('Courier New', 16, 'bold'), 
@@ -519,7 +523,7 @@ Button(window, text='Delete Student',
        activeforeground='#666666',
        borderwidth=1,
        relief=RIDGE,
-       command=delete_stud).place(x=50,y=450) #button to delete student info
+       command=delete_stud).place(x=50,y=300) #button to delete student info
 
 Button(window, text='Update Student', 
        font=('Courier New', 16, 'bold'), 
@@ -530,6 +534,6 @@ Button(window, text='Update Student',
        activeforeground='#666666',
        borderwidth=1,
        relief=RIDGE,
-       command=update_stud).place(x=50,y=500) #button to update student info
+       command=update_stud).place(x=50,y=350) #button to update student info
 
 window.mainloop()
