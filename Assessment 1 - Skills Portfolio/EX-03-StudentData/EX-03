@@ -44,7 +44,7 @@ def create_treeview(frame):#function to create a treeview
 
     style = ttk.Style() #creates style object
     style.configure('Treeview.Heading', font=(' Courier New', 11, 'bold'))#sets heading style    
-    style.configure('Treeview', font=('Courier New', 12))#sets row text style
+    style.configure('Treeview', font=('Courier New', 12),rowheight=25 )#sets row text style
 
 
     for col in cols:#loops through column names
@@ -81,10 +81,10 @@ def all_student(): #function to show all student data
             num_stud += 1 #increments student count
             total_percent_sum += total_percentage #adds percentage for average
 
-    Label(fr_1, text=f'Number of students: {num_stud-1}', bg='#d9d9d9', font=('Courier New',20,'bold')).place(x=10,y=430) #displays total students
+    Label(fr_1, text=f'Number of students: {num_stud-1}', bg='#d9d9d9', font=('Courier New',20,'bold')).place(x=10,y=540) #displays total students
 
     avg_percent = round(total_percent_sum / (num_stud-1), 2) #calculates average percentage
-    Label(fr_1, text=f'Average percentage: {avg_percent}', bg='#d9d9d9', font=('Courier New',20,'bold')).place(x=10,y=480) #displays average percentage
+    Label(fr_1, text=f'Average percentage: {avg_percent}', bg='#d9d9d9', font=('Courier New',20,'bold')).place(x=10,y=590) #displays average percentage
 
 
 def individual_stud(): #function to search student by id
@@ -94,6 +94,9 @@ def individual_stud(): #function to search student by id
 
     tree = create_treeview(fr_2)#creates treeview
     tree.place(relx=0.5, rely=0, anchor=N)
+
+    style = ttk.Style()
+    style.configure('Treeview', font=('Courier New', 12),rowheight=20 )
 
     ask_stud=Label(fr_2, text='Enter Student ID: ',font=('Courier New', 18, 'bold'), bg='#d9d9d9') #label asking for ID
     ask_stud.place(x=400,y=500)
@@ -130,7 +133,11 @@ def individual_stud(): #function to search student by id
 
 
 
-    btn = Button(fr_2, text='Search', font=('Courier New', 16, 'bold'), command=search_student) #search button
+    btn = Button(fr_2, text='Search', 
+           font=('Courier New', 16, 'bold'),
+           bg='#141223', 
+           fg='#d9d9d9',
+           command=search_student) #search button
     btn.place(x=600, y=545)#places button
 
 
@@ -199,7 +206,7 @@ Button(window, text='All Students Info',
        activeforeground='#666666',
        borderwidth=1,
        relief=RIDGE,
-       command=all_student).place(x=50,y=200) #button to show info of all students
+       command=all_student).place(x=50,y=50) #button to show info of all students
 
 Button(window, text='Search', 
        font=('Courier New', 16, 'bold'), 
@@ -210,7 +217,7 @@ Button(window, text='Search',
        activeforeground='#666666',
        borderwidth=1,
        relief=RIDGE,
-       command=individual_stud).place(x=50,y=250) #button for searching
+       command=individual_stud).place(x=50,y=100) #button for searching
 
 Button(window, text='Highest Performer', 
        font=('Courier New', 16, 'bold'), 
@@ -221,7 +228,7 @@ Button(window, text='Highest Performer',
        activeforeground='#666666',
        borderwidth=1,
        relief=RIDGE,
-       command=highest).place(x=50,y=300)#button to show highest perfromer
+       command=highest).place(x=50,y=150)#button to show highest perfromer
 
 Button(window, text='Lowest Performer', 
        font=('Courier New', 16, 'bold'), 
@@ -232,6 +239,6 @@ Button(window, text='Lowest Performer',
        activeforeground='#666666',
        borderwidth=1,
        relief=RIDGE,
-       command=lowest).place(x=50,y=350) #button to show lowest performer
+       command=lowest).place(x=50,y=200) #button to show lowest performer
 
 window.mainloop()
