@@ -1,0 +1,244 @@
+from tkinter import * #importing tkinter
+from tkinter import ttk #importing themed
+from PIL import ImageTk,Image #importing PIL for importing image
+
+
+window=Tk() #creates the main application window
+window.title('Student Management') #sets the title of the window
+window.state('zoomed') #keeps window in maximized state
+window.resizable(FALSE, FALSE) #disables window resizing
+
+bg = Image.open('Assessment 1 - Skills Portfolio/EX-03-StudentData/resources-3/bg.png') #opening background image
+bg_rs = bg.resize((1535,840))#resizing background image to fit the window
+bg_1 = ImageTk.PhotoImage(bg_rs) #converts image for tkinter
+bg_l = Label(window, image=bg_1)  #creating label to display background image
+bg_l.place(x=0,y=0) #placing background label
+bg_l.lower() #sends label to back layer
+
+heading=Frame(window, width=650, height=70, bg='#d9d9d9') #creates heading frame
+heading.place(x=650,y=50) #positioning heading frame
+
+title=Label(heading, text='Student Management', font=('Courier New',45,'bold'), bg='#d9d9d9')#creates title label
+title.place(relx=0.5,rely=0.5, anchor=CENTER)#centers text in heading
+
+
+contents = Frame(window, width=1202, height=632, bg='#d9d9d9')#main content frame
+contents.place(x=330, y=200)
+
+
+with open('Assessment 1 - Skills Portfolio/A1 - Resources/studentmarks.txt') as file_handler: #opens student marks file
+    lines = file_handler.readlines() #reads all lines into list
+
+def delete_fr(): #defines function to clear content frame
+    for frame in contents.winfo_children(): #loops through all widgets
+        frame.destroy() #removes each widget
+
+
+def create_treeview(frame):#function to create a treeview
+
+    cols = ('No.','Student ID','Name', 'Total coursework mark', 'Exam mark','Total percentage','Student grade') #column names
+
+
+    tree = ttk.Treeview(frame, columns=cols, show='headings', height=20) #creates treeview widget
+
+
+    style = ttk.Style() #creates style object
+    style.configure('Treeview.Heading', font=(' Courier New', 11, 'bold'))#sets heading style
+    style.configure('Treeview', font=('Courier New', 12),rowheight=25 )#sets row text style
+
+
+    for col in cols:#loops through column names
+        tree.heading(col, text=col) #sets each heading
+        tree.column(col, width=168, anchor=CENTER) #sets width and center alignment
+
+
+    scrollbar = Scrollbar(tree, orient=VERTICAL, command=tree.yview)#creates vertical scrollbar
+    tree.configure(yscroll=scrollbar.set) #connects scrollbar
+    scrollbar.place(relx=1.0, rely=0.5, anchor=E, relheight=1.0)#places scrollbar inside tree
+
+    return tree #returns created treeview
+
+
+def all_student(): #function to show all student data
+    delete_fr() #clears previous content
+    fr_1 = Frame(contents, width=1202, height=632, bg='#d9d9d9')#creates frame for content
+    fr_1.place(x=0, y=0)
+
+    tree = create_treeview(fr_1) #creates treeview
+    tree.place(relx=0.5, rely=0, anchor=N)
+
+    num_stud = 1 #counter for students
+    total_percent_sum = 0 #sum of percentages
+
+    for line in lines: #loops through each line of file
+        parts = line.strip().split(',') #splits line into list
+        if len(parts) == 6: #checks valid format
+            stud_id, name, c1, c2, c3, exam = parts[0], parts[1], int(parts[2]), int(parts[3]), int(parts[4]), int(parts[5]) #assigns values
+            course_total = c1 + c2 + c3 #calculates coursework total
+            total_percentage = round(((course_total + exam) / 160) * 100, 2) #calculates total percentage
+            grade = 'A' if total_percentage >= 70 else 'B' if total_percentage >= 60 else 'C' if total_percentage >= 50 else 'D' if total_percentage >= 40 else 'F' #assigns grade
+            tree.insert('', 'end', values=(num_stud, stud_id, name, course_total, exam, total_percentage, grade))#inserts row
+            num_stud += 1 #increments student count
+            total_percent_sum += total_percentage #adds percentage for average
+
+    Label(fr_1, text=f'Number of students: {num_stud-1}', bg='#d9d9d9', font=('Courier New',20,'bold')).place(x=10,y=540) #displays total students
+
+    avg_percent = round(total_percent_sum / (num_stud-1), 2) #calculates average percentage
+    Label(fr_1, text=f'Average percentage: {avg_percent}', bg='#d9d9d9', font=('Courier New',20,'bold')).place(x=10,y=590) #displays average percentage
+
+
+def individual_stud(): #function to search student by id
+    delete_fr()
+    fr_2 = Frame(contents, width=1202, height=632, bg='#d9d9d9') #creates new frame
+    fr_2.place(x=0, y=0) #places frame
+
+    tree = create_treeview(fr_2)#creates treeview
+    tree.place(relx=0.5, rely=0, anchor=N)
+
+    style = ttk.Style()
+    style.configure('Treeview', font=('Courier New', 12),rowheight=20 )
+
+    ask_stud=Label(fr_2, text='Enter Student ID: ',font=('Courier New', 18, 'bold'), bg='#d9d9d9') #label asking for ID
+    ask_stud.place(x=400,y=500)
+
+    entry=Entry(fr_2, font=('Courier New', 18)) #creates entry box
+    entry.place(x=650, y=500)
+
+    not_found = Label(fr_2, text='', font=('Courier New', 18, 'bold'), fg='red', bg='#d9d9d9') #label for error message
+    not_found.place(x=510, y=450)
+
+
+    def search_student(): #nested function to search
+        search = entry.get().strip() #gets entered id
+        tree.delete(*tree.get_children()) #clears old results
+
+        found = False  #indicates if the search result exists or not
+
+        for line in lines: #loops through students
+            parts = line.strip().split(',') #splits data
+            if len(parts) == 6 and parts[0] == search: #checks for matching id
+                stud_id, name, c1, c2, c3, exam = parts[0], parts[1], int(parts[2]), int(parts[3]), int(parts[4]), int(parts[5])  #extracts data
+                course_total = c1 + c2 + c3#course total
+                total_percentage = round(((course_total + exam) / 160) * 100, 2)#calculating percentage
+                grade = 'A' if total_percentage >= 70 else 'B' if total_percentage >= 60 else 'C' if total_percentage >= 50 else 'D' if total_percentage >= 40 else 'F' #grade
+
+                tree.insert('', 'end', values=(1, stud_id, name, course_total, exam, total_percentage, grade))  #inserts result
+                found = True #indicates the search result exists
+                break #stops loop
+
+        if found:
+            not_found.config(text='')#clears error text
+        else:
+            not_found.config(text='Student not found!')#shows error message
+
+
+
+    btn = Button(fr_2, text='Search', 
+           font=('Courier New', 16, 'bold'),
+           bg='#141223',
+           fg='#d9d9d9',
+           command=search_student) #search button
+    btn.place(x=600, y=545)#places button
+
+
+def highest(): #function to get highest scoring student
+    delete_fr()
+    fr_3 = Frame(contents, width=1202, height=632, bg='#d9d9d9')
+    fr_3.place(x=0, y=0)
+
+    tree = create_treeview(fr_3)
+    tree.place(relx=0.5, rely=0, anchor=N)
+
+    high_stud= None #stores highest student
+    high_percent = 0 #sets minimum possible percentage
+
+    for line in lines: #loops through data
+        parts = line.strip().split(',') #splits line
+        if len(parts) == 6: #checks valid
+            stud_id, name, c1, c2, c3, exam = parts[0], parts[1], int(parts[2]), int(parts[3]), int(parts[4]), int(parts[5]) #assigns data
+            course_total = c1 + c2 + c3#course total
+            total_percentage = round(((course_total + exam) / 160) * 100, 2) #calculates percentage
+
+            if total_percentage > high_percent:#checks new highest
+                high_percent = total_percentage #updates highest percentage
+                high_stud = (stud_id, name, course_total, exam, total_percentage) #stores highest student
+
+
+    if high_stud: #checks if student found
+        stud_id, name, course_total, exam, total_percentage = high_stud #unpacks tuple
+        grade = 'A' if total_percentage >= 70 else 'B' if total_percentage >= 60 else 'C' if total_percentage >= 50 else 'D' if total_percentage >= 40 else 'F' #gets grade
+        tree.insert('', 'end', values=(1, stud_id, name, course_total, exam, total_percentage, grade)) #inserts highest student
+
+
+def lowest(): #function to get lowest performer
+    delete_fr()
+    fr_4 = Frame(contents, width=1202, height=632, bg='#d9d9d9')
+    fr_4.place(x=0, y=0)
+
+    tree = create_treeview(fr_4)
+    tree.place(relx=0.5, rely=0, anchor=N)
+
+    low_stud = None#stores lowest student
+    low_percent = 161 #sets above max possible percentage
+
+    for line in lines:
+        parts = line.strip().split(',')
+        if len(parts) == 6:
+            stud_id, name, c1, c2, c3, exam = parts[0], parts[1], int(parts[2]), int(parts[3]), int(parts[4]), int(parts[5])
+            course_total = c1 + c2 + c3
+            total_percentage = round(((course_total + exam) / 160) * 100, 2)
+
+            if total_percentage < low_percent: #checks new lowest
+                low_percent = total_percentage #updates lowest value
+                low_stud = (stud_id, name, course_total, exam, total_percentage)#stores student
+
+    if low_stud:
+        stud_id, name, course_total, exam, total_percentage = low_stud
+        grade = 'A' if total_percentage >= 70 else 'B' if total_percentage >= 60 else 'C' if total_percentage >= 50 else 'D' if total_percentage >= 40 else 'F'
+        tree.insert('', 'end', values=(1, stud_id, name, course_total, exam, total_percentage, grade))
+
+Button(window, text='All Students Info',
+       font=('Courier New', 16, 'bold'),
+       bg='#141223',
+       fg='#d9d9d9',
+       activebackground='#141223',
+       highlightthickness=0,
+       activeforeground='#666666',
+       borderwidth=1,
+       relief=RIDGE,
+       command=all_student).place(x=50,y=50) #button to show info of all students
+
+Button(window, text='Search',
+       font=('Courier New', 16, 'bold'),
+       bg='#141223',
+       fg='#d9d9d9',
+       activebackground='#141223',
+       highlightthickness=0,
+       activeforeground='#666666',
+       borderwidth=1,
+       relief=RIDGE,
+       command=individual_stud).place(x=50,y=100) #button for searching
+
+Button(window, text='Highest Performer',
+       font=('Courier New', 16, 'bold'),
+       bg='#141223',
+       fg='#d9d9d9',
+       activebackground='#141223',
+       highlightthickness=0,
+       activeforeground='#666666',
+       borderwidth=1,
+       relief=RIDGE,
+       command=highest).place(x=50,y=150)#button to show highest perfromer
+
+Button(window, text='Lowest Performer',
+       font=('Courier New', 16, 'bold'),
+       bg='#141223',
+       fg='#d9d9d9',
+       activebackground='#141223',
+       highlightthickness=0,
+       activeforeground='#666666',
+       borderwidth=1,
+       relief=RIDGE,
+       command=lowest).place(x=50,y=200) #button to show lowest performer
+
+window.mainloop()
