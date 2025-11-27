@@ -243,7 +243,7 @@ class mathquiz: #defines mathquiz class that contains all game logic and screens
             font=('Comic Sans MS', 40, 'bold'),  #sets font style and size
             fg='#D81E5B', #sets font color
             bg='#fffdf4')  #sets background color
-        qn_no.place(x=590,y=170) #positions the label on screen
+        qn_no.place(x=580,y=170) #positions the label on screen
 
         question=Label(self.fr_4, text=qns(),  #creates label to display the question
             font=('Comic Sans MS', 40, 'bold'), 
@@ -398,13 +398,13 @@ class mathquiz: #defines mathquiz class that contains all game logic and screens
             font=('Comic Sans MS', 40, 'bold'), 
             fg='#D81E5B',
             bg='#fffdf4')
-        qn_no.place(x=590,y=170)
+        qn_no.place(x=580,y=170)
 
         question=Label(self.fr_5, text=qns(),
             font=('Comic Sans MS', 40, 'bold'), 
             fg='#D81E5B',
             bg='#fffdf4')
-        question.place(x=710,y=290)
+        question.place(x=680,y=290)
 
         feedback=Label(self.fr_5, text= '', font=('Comic Sans MS', 20, 'bold'),
                         fg='#D81E5B',bg='#fffdf4',justify='center', width=30)
@@ -550,17 +550,17 @@ class mathquiz: #defines mathquiz class that contains all game logic and screens
             font=('Comic Sans MS', 40, 'bold'), 
             fg='#D81E5B',
             bg='#fffdf4')
-        qn_no.place(x=590,y=170)
+        qn_no.place(x=580,y=170)
 
         question=Label(self.fr_6, text=qns(),
             font=('Comic Sans MS', 40, 'bold'), 
             fg='#D81E5B',
             bg='#fffdf4')
-        question.place(x=710,y=290)
+        question.place(x=610,y=290)
 
         feedback=Label(self.fr_6, text= '', font=('Comic Sans MS', 20, 'bold'),
-                        fg='#D81E5B',bg='#fffdf4',justify='center', width=30)
-        feedback.place(x=530, y=600)
+                        fg='#D81E5B',bg='#fffdf4',justify='center', width=35)
+        feedback.place(x=500, y=600)
 
         
         atmpt_left=Label(self.fr_6, text=f' Attempts left: {self.attempts}', font=('Comic Sans MS', 20, 'bold'),
